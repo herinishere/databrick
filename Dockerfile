@@ -19,7 +19,7 @@ COPY frontend/ /app/frontend/
 # NOTE: Large files (schedules.json, Train_details_22122017.csv) must exist
 # in your project folder when building — they are bundled into the image.
 COPY data/stations.json              /app/data/stations.json
-COPY data/train_delay_data.csv       /app/data/train_delay_data.csv
+COPY data/train_delay_data_rich.csv       /app/data/train_delay_data_rich.csv
 
 # Copy rich training data if exists (generated locally)
 # If not present, the app generates it on first startup
