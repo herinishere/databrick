@@ -20,7 +20,7 @@ DATA_DIR = Path(os.environ.get("RAILWAYS_DATA_DIR", "."))
 STATIONS_FILE   = DATA_DIR / "stations.json"
 SCHEDULES_FILE  = DATA_DIR / "schedules.json"
 TRAIN_DETAILS   = DATA_DIR / "Train_details_22122017.csv"
-DELAY_DATA      = DATA_DIR / "train_delay_data.csv"
+DELAY_DATA      = DATA_DIR / "train_delay_data_rich.csv"
 MODELS_DIR      = DATA_DIR / "models"
 
 
