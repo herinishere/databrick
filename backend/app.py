@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 # ── FIXED: Use the directory where app.py lives as BASE_DIR ──────────────────
-BASE_DIR = Path(__file__).resolve().parent  # was .parent.parent — wrong on Railway!
+BASE_DIR = Path(__file__).resolve().parent.parent  # /app/backend -> /app (where frontend/ and data/ live)
 
 # Use env var if set, else look for data/ next to app.py
 DATA_DIR = Path(os.environ.get("RAILWAYS_DATA_DIR", str(BASE_DIR / "data")))
