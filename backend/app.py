@@ -1,5 +1,5 @@
 """
-app.py — Rail Drishti FastAPI Backend
+app.py — Rail Drishti FastAPI Backend (Railway-compatible)
 """
 import os, sys, math, datetime, traceback
 from pathlib import Path
@@ -9,21 +9,33 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-# Use env var if set (Render/Docker), else derive from file location
+# ── FIXED: Use the directory where app.py lives as BASE_DIR ──────────────────
+BASE_DIR = Path(__file__).resolve().parent  # was .parent.parent — wrong on Railway!
+
+# Use env var if set, else look for data/ next to app.py
 DATA_DIR = Path(os.environ.get("RAILWAYS_DATA_DIR", str(BASE_DIR / "data")))
 os.environ["RAILWAYS_DATA_DIR"] = str(DATA_DIR)
+
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import data_loader
 import models as M
 
 app = FastAPI(title="Rail Drishti API", version="1.0.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
+# ── FIXED: Mount frontend from correct path ───────────────────────────────────
 FRONTEND_DIR = BASE_DIR / "frontend"
 if FRONTEND_DIR.exists():
     app.mount("/app", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
+    print(f"Frontend mounted from: {FRONTEND_DIR}")
+else:
+    print(f"WARNING: Frontend directory not found at {FRONTEND_DIR}")
 
 DATA={}; DELAY_PREDICTOR=None; CONG_CLF=None; MASTER_DF=None; STATION_CONG=None; LOADED=False
 
@@ -31,6 +43,8 @@ DATA={}; DELAY_PREDICTOR=None; CONG_CLF=None; MASTER_DF=None; STATION_CONG=None;
 def startup():
     global DATA,DELAY_PREDICTOR,CONG_CLF,MASTER_DF,STATION_CONG,LOADED
     try:
+        print(f"BASE_DIR: {BASE_DIR}")
+        print(f"DATA_DIR: {DATA_DIR}")
         print("Loading datasets...")
         DATA = data_loader.load_all(verbose=True)
         print("Training ML models...")
@@ -38,7 +52,7 @@ def startup():
         MASTER_DF = _build_master()
         STATION_CONG = M.compute_station_congestion(MASTER_DF)
         LOADED = True
-        print("System ready")
+        print("System ready ✅")
     except Exception as e:
         print(f"Startup error: {e}"); traceback.print_exc()
 
