@@ -31,11 +31,19 @@ app.add_middleware(
 
 # ── FIXED: Mount frontend from correct path ───────────────────────────────────
 FRONTEND_DIR = BASE_DIR / "frontend"
+print(f"BASE_DIR: {BASE_DIR}")
+print(f"FRONTEND_DIR: {FRONTEND_DIR} exists={FRONTEND_DIR.exists()}")
+# Fallback: try absolute /app/frontend if relative path fails
+if not FRONTEND_DIR.exists():
+    ALT = Path("/app/frontend")
+    print(f"Trying fallback: {ALT} exists={ALT.exists()}")
+    if ALT.exists():
+        FRONTEND_DIR = ALT
 if FRONTEND_DIR.exists():
     app.mount("/app", StaticFiles(directory=str(FRONTEND_DIR), html=True), name="frontend")
     print(f"Frontend mounted from: {FRONTEND_DIR}")
 else:
-    print(f"WARNING: Frontend directory not found at {FRONTEND_DIR}")
+    print(f"WARNING: Frontend not found at {FRONTEND_DIR}")
 
 DATA={}; DELAY_PREDICTOR=None; CONG_CLF=None; MASTER_DF=None; STATION_CONG=None; LOADED=False
 
